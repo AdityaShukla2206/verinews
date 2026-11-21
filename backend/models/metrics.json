@@ -1,0 +1,43 @@
+{
+ "dataset": {
+  "samples": 272,
+  "classes": {
+   "SCAM": 113,
+   "HOAX": 68,
+   "LEGIT": 91
+  },
+  "templates": 36,
+  "evaluation": "4-fold GroupKFold by template (unseen templates in each test fold)",
+  "note": "Synthetic template-based seed set; indicative only, not a LIAR/FakeNewsNet benchmark."
+ },
+ "deployed": "TF-IDF + Logistic Regression",
+ "models": [
+  {
+   "name": "TF-IDF + Linear SVM",
+   "precision": 89.1,
+   "recall": 84.6,
+   "f1": 84.6,
+   "accuracy": 85.5,
+   "latency_ms": 1.1,
+   "parameters": 19773
+  },
+  {
+   "name": "TF-IDF + Logistic Regression",
+   "precision": 88.3,
+   "recall": 84.3,
+   "f1": 84.3,
+   "accuracy": 85.2,
+   "latency_ms": 1.38,
+   "parameters": 19773
+  },
+  {
+   "name": "TF-IDF + Naive Bayes",
+   "precision": 85.8,
+   "recall": 83.9,
+   "f1": 83.4,
+   "accuracy": 84.4,
+   "latency_ms": 1.38,
+   "parameters": 19773
+  }
+ ]
+}

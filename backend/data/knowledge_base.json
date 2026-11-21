@@ -1,0 +1,155 @@
+[
+ {
+  "id": "VN-2026-LAPTOP-SCAM",
+  "type": "SCAM",
+  "headline": "PIB Notice: Prime Minister Free Laptop Scheme 2026 registration open. Click link to get Rs 5000 allowance immediately.",
+  "channel": "WhatsApp Forward / SMS Broadcast",
+  "category": "Cyber Fraud & Identity Harvesting",
+  "language": "English / Hindi Scheme Phishing",
+  "verification": "PIB Fact-Check Confirmed Fraud",
+  "summary": "The viral message claims that the Ministry of Education and Prime Minister Office are issuing free laptops and a cash allowance of ₹5000 to all students who register on an external web domain (.xyz link).",
+  "claim": "Government is giving free laptops and ₹5,000 cash to students via the provided web registration link.",
+  "fact": "PIB Fact Check confirmed NO such scheme exists. Government scheme links are NEVER hosted on .xyz or bit.ly domains. The link harvested personal banking details.",
+  "sources": [
+   "PIB Fact Check Official Twitter & Website Advisory",
+   "Ministry of Education Security Portal (education.gov.in)",
+   "National Cyber Crime Reporting Portal (cybercrime.gov.in)"
+  ],
+  "redFlags": [
+   "Non-government domain extension (.xyz / .top instead of .gov.in)",
+   "Artificial deadline panic: 'Only 200 laptops remaining!'",
+   "Promised financial gain requiring personal banking details",
+   "Encourages mass forwarding to 10 WhatsApp groups"
+  ],
+  "provenance": "Spreads through malicious clickbait social networks targeting students and job applicants.",
+  "domain": "pm-free-laptop-scheme-2026.xyz",
+  "ip": "Offshore Proxy Host Range",
+  "pattern": "High-Risk Credential Harvesting Phishing Trap",
+  "advice": [
+   "🚨 DO NOT click on external bit.ly or .xyz web links.",
+   "🚨 Remember: Official Indian government schemes ALWAYS end in .gov.in or .nic.in.",
+   "🚨 Report fraudulent links on cybercrime.gov.in or helpline 1930."
+  ]
+ },
+ {
+  "id": "VN-2026-SBI-PHISHING",
+  "type": "SCAM",
+  "headline": "URGENT: Your SBI Account YONO access suspended due to missing PAN verification. Update immediately at sbi-pan-kyc.com or lose funds.",
+  "channel": "Direct SMS Smishing",
+  "category": "Banking Phishing & Financial Extortion",
+  "language": "English SMS Smishing",
+  "verification": "CERT-In Cyber Security Alert",
+  "summary": "A targeted SMS warns the recipient that their State Bank of India YONO account will be frozen within 24 hours unless they update their PAN card details through a fake banking website.",
+  "claim": "Bank has suspended YONO access and demands immediate PAN update via link to avoid account closure.",
+  "fact": "State Bank of India (SBI) NEVER sends SMS with web links to update PAN/KYC. Official banking updates occur exclusively inside the secure YONO application.",
+  "sources": [
+   "State Bank of India (SBI) Official Cyber Advisory",
+   "CERT-In Financial Fraud Warning Bulletin",
+   "Reserve Bank of India (RBI) Security Guidelines"
+  ],
+  "redFlags": [
+   "Sent from an individual 10-digit mobile number instead of SBI official sender ID (e.g., SBIBNK)",
+   "Spoofed domain 'sbi-pan-kyc.com' mimicking official SBI portal",
+   "Extreme panic urgency threat: 'Account suspended in 24 hours'",
+   "Asks for card numbers, CVV, or SMS OTPs"
+  ],
+  "provenance": "Direct SMS gateway spoofing designed to redirect users to credential-harvesting web forms.",
+  "domain": "sbi-pan-kyc.com (Registered 2 days ago)",
+  "ip": "Dynamic Anonymized Cloud VPS",
+  "pattern": "High-Confidence Banking Smishing Attack",
+  "advice": [
+   "🚨 NEVER enter bank login passwords or OTPs on links received via SMS.",
+   "🚨 Forward suspicious banking SMS to 1909 or report to phish@sbi.co.in."
+  ]
+ },
+ {
+  "id": "VN-2026-ISRO-SPADEX",
+  "type": "REAL",
+  "headline": "ISRO successfully launched the SpaDeX satellites aboard PSLV-C60 on 30 December 2024.",
+  "channel": "Official Press Bureau & Mainstream Media",
+  "category": "Space Science & Technology",
+  "language": "English Technical Journalism",
+  "verification": "ISRO Press Release Verified",
+  "summary": "ISRO records confirm that PSLV-C60 launched the SpaDeX-A and SpaDeX-B satellites on 30 December 2024.",
+  "claim": "ISRO launched the two SpaDeX satellites aboard PSLV-C60 on 30 December 2024.",
+  "fact": "Verified: ISRO’s official mission records list PSLV-C60/SpaDeX on 30 December 2024 with SpaDeX-A and SpaDeX-B as payloads.",
+  "sources": [
+   "ISRO Launch Missions: https://www.isro.gov.in/LaunchMissions.html",
+   "ISRO SpaDeX Mission: https://www.isro.gov.in/mission_SpaDeX.html",
+   "ISRO Annual Report 2024–25 (Department of Space)"
+  ],
+  "redFlags": [
+   "No malicious red flags detected.",
+   "Uses objective, technical reporting language",
+   "Attributed directly to named space officials and official centers"
+  ],
+  "provenance": "Matched against ISRO’s official launch-mission record and SpaDeX mission page.",
+  "domain": "isro.gov.in (Official Government Entity)",
+  "ip": "National Informatics Centre (NIC) Server",
+  "pattern": "Verified Authentic News Communique",
+  "advice": [
+   "✅ Fully Authentic News. Safe for academic reference and public dissemination."
+  ]
+ },
+ {
+  "id": "VN-2026-HINGLISH-CURRENCY",
+  "type": "FAKE",
+  "headline": "Khabar aa rahi hai ki kal se saare 500 ke note band hone wale hain. Jaldi bank me jama karein ye video sabhi ko forward karein.",
+  "channel": "WhatsApp Viral Voice Note / Forward",
+  "category": "Financial Misinformation & Hoax",
+  "language": "Hinglish Code-Mixed Viral Forward",
+  "verification": "PIB Fact Check — FALSE CLAIM (12 July 2025)",
+  "summary": "PIB Fact Check debunked the viral claim that ₹500 notes would be discontinued. No such RBI instruction was issued; ₹500 notes remain legal tender.",
+  "claim": "All ₹500 currency notes will become invalid legal tender starting tomorrow.",
+  "fact": "FALSE: PIB Fact Check stated that RBI had issued no instruction to discontinue ₹500 notes and that these notes would continue to be legal tender. The viral message confused an RBI instruction to increase ATM availability of ₹100/₹200 notes with discontinuation of ₹500 notes.",
+  "sources": [
+   "PIB Fact Check clarification (reported by Akashvani, 2 Jan 2026): https://newsonair.gov.in/government-debunks-claim-on-discontinuation-of-%E2%82%B9500-notes/",
+   "RBI FAQ — ₹500 notes remain legal tender unless withdrawn: https://www.rbi.org.in/scripts/FAQView.aspx?Id=136&fn=2753",
+   "BOOM Fact Check (5 June 2025): https://www.boomlive.in/fact-check/fact-check-rbi-rs500-note-ban-discontinued-march-2026-viral-false-claim-28745"
+  ],
+  "redFlags": [
+   "Lacks official RBI press release document link",
+   "Employs panic-inducing emotional triggers ('Jaldi jama karein')",
+   "Urges mass forwarding without citing official news sources",
+   "Code-mixed Hinglish syntax commonly used in viral hoaxes"
+  ],
+  "provenance": "Matched to PIB Fact Check clarification and RBI's published legal-tender FAQ.",
+  "domain": "Social Messenger Cascading Network",
+  "ip": "Encrypted P2P Broadcast",
+  "pattern": "Debunked ₹500 Note Discontinuation Rumour",
+  "advice": [
+   "ℹ️ Always verify currency news on the official RBI portal (rbi.org.in).",
+   "ℹ️ Refrain from forwarding unverified financial rumors that induce public panic."
+  ]
+ },
+ {
+  "id": "VN-2026-RAHUL-COLUMBIA-REPORT",
+  "type": "REAL",
+  "headline": "‘India sitting on economic disaster’: Rahul Gandhi flags unemployment, education crisis at Columbia",
+  "channel": "Cross-checked current news report",
+  "category": "Verified Event / Public Statement Reporting",
+  "language": "English / Hindi",
+  "verification": "VERIFIED — independently reported by multiple news outlets (18 November 2026)",
+  "summary": "The report that Rahul Gandhi made remarks about unemployment and education at Columbia University on 18 November 2026 is corroborated by multiple independent news reports.",
+  "claim": "Rahul Gandhi spoke at Columbia University and made remarks describing India's economic situation as an economic disaster, while discussing unemployment and education.",
+  "fact": "VERIFIED REPORTING: Moneycontrol (ANI), Aaj Tak, Times of India and Amar Ujala published matching reports dated 18 November 2026. This verifies that the statement was reported and attributed to the Columbia University event; it does NOT independently prove the political/economic opinion in the quote.",
+  "sources": [
+   "Moneycontrol / ANI (18 Nov 2026): https://www.moneycontrol.com/news/india/india-sitting-on-economic-disaster-says-rahul-gandhi-at-columbia-university-14082946.html",
+   "Aaj Tak (18 Nov 2026): https://www.aajtak.in/india/news/story/rahul-gandhi-columbia-university-questions-unemployment-election-irregularities-ntc-acwi-rpti-2699259-2026-11-18",
+   "Times of India (18 Nov 2026): https://timesofindia.indiatimes.com/india/india-sitting-on-economic-disaster-rahul-gandhi-flags-unemployment-education-crisis-at-columbia/articleshow/135945307.cms",
+   "Amar Ujala (18 Nov 2026): https://www.amarujala.com/world/rahul-gandhi-india-economic-disaster-unemployment-columbia-university-2026-11-18"
+  ],
+  "redFlags": [
+   "No mismatch found in the event, speaker, location or main topic across the cited reports.",
+   "The quote is a political opinion/assessment; verifying that it was said is different from proving the opinion itself true."
+  ],
+  "provenance": "Matched against four independently published reports dated 18 November 2026.",
+  "domain": "moneycontrol.com / aajtak.in / timesofindia.indiatimes.com / amarujala.com",
+  "ip": "Not applicable — news report verification",
+  "pattern": "Cross-source corroborated reporting",
+  "advice": [
+   "Use the linked reports to confirm the date and context.",
+   "Treat the quoted economic assessment as Rahul Gandhi's opinion, not as a proven statistical conclusion."
+  ]
+ }
+]

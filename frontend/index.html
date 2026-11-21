@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeriNews AI v3.1 - Misinformation & Scam Intelligence Engine</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome 6.4 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js CDN for Model Benchmarks -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Custom Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Cinzel', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        zinc: {
+                            950: '#09090b',
+                            900: '#18181b',
+                            850: '#202024',
+                            800: '#27272a',
+                            700: '#3f3f46'
+                        },
+                        cyber: {
+                            cyan: '#06b6d4',
+                            emerald: '#10b981',
+                            rose: '#f43f5e',
+                            amber: '#f59e0b',
+                            purple: '#a855f7'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #09090b;
+            color: #f4f4f5;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.07) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.05) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #18181b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52525b;
+        }
+
+        /* Glassmorphism containers */
+        .glass-panel {
+            background: rgba(24, 24, 27, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-panel-hover:hover {
+            border-color: rgba(6, 182, 212, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(6, 182, 212, 0.15);
+        }
+
+        /* Pulse glow effects */
+        .glow-cyan {
+            box-shadow: 0 0 20px -5px rgba(6, 182, 212, 0.3);
+        }
+        .glow-rose {
+            box-shadow: 0 0 20px -5px rgba(244, 63, 94, 0.3);
+        }
+
+        /* Print formatting for export feature */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .glass-panel {
+                background: #ffffff !important;
+                color: #000000 !important;
+                border: 1px solid #d4d4d8 !important;
+                box-shadow: none !important;
+            }
+            .text-zinc-100, .text-zinc-200, .text-zinc-300, .text-zinc-400 {
+                color: #18181b !important;
+            }
+            .bg-zinc-900, .bg-zinc-950, .bg-zinc-850 {
+                background: #f4f4f5 !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased selection:bg-cyan-500 selection:text-black">
+
+    <header class="no-print border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-cyan-600 via-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                    <i class="fa-solid fa-brain text-white text-2xl"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl font-extrabold tracking-tight text-white font-serif">VeriNews AI</span>
+                        <span class="bg-cyan-500/10 text-cyan-400 text-[10px] font-mono px-2 py-0.5 rounded border border-cyan-500/30 font-bold uppercase tracking-widest">v3.1</span>
+                    </div>
+                    <p class="text-xs text-zinc-400 hidden sm:block">Misinformation & Scam Intelligence Engine</p>
+                </div>
+            </div>
+
+            <!-- Tab Navigation Links -->
+            <nav class="flex items-center gap-1 sm:gap-2">
+                <button onclick="switchTab('analyzer')" id="tab-btn-analyzer" class="px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
+                    <i class="fa-solid fa-microchip"></i>
+                    <span>Analyzer</span>
+                </button>
+                <button onclick="switchTab('benchmarks')" id="tab-btn-benchmarks" class="px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all text-zinc-400 hover:text-white hover:bg-zinc-800/60 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-line text-purple-400"></i>
+                    <span class="hidden md:inline">Model Benchmarks</span>
+                    <span class="md:hidden">Benchmarks</span>
+                </button>
+                <button onclick="switchTab('radar')" id="tab-btn-radar" class="px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all text-zinc-400 hover:text-white hover:bg-zinc-800/60 flex items-center gap-2">
+                    <i class="fa-solid fa-radar text-amber-400"></i>
+                    <span class="hidden md:inline">Scam Radar</span>
+                    <span class="md:hidden">Radar</span>
+                </button>
+                <button onclick="switchTab('docs')" id="tab-btn-docs" class="px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all text-zinc-400 hover:text-white hover:bg-zinc-800/60 flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-emerald-400"></i>
+                    <span class="hidden lg:inline">Academic Docs & Viva Guide</span>
+                    <span class="lg:hidden">Docs</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <!-- ========================================================================= -->
+        <!-- TAB 1: AI NEURAL ANALYZER (Interactive Fact-Checking & Scam Engine) -->
+        <!-- ========================================================================= -->
+        <div id="view-analyzer" class="space-y-8">
+            
+            <!-- Input Control Section -->
+            <section class="glass-panel rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+                <div class="max-w-3xl mx-auto text-center mb-6">
+                    <span class="text-[11px] font-mono text-cyan-400 uppercase tracking-widest px-3 py-1 bg-cyan-950/60 rounded-full border border-cyan-800/60 inline-flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved"></i> ML Classifier + Threat Scanners + Fact Registry
+                    </span>
+                    <h1 class="text-2xl sm:text-4xl font-extrabold text-white mt-3 tracking-tight font-serif">
+                        Misinformation & Cyber Scam Analysis Engine
+                    </h1>
+                    <p class="text-zinc-400 text-xs sm:text-sm mt-2">
+                        Analyze news headlines, Hinglish forwards, phishing SMS, or social media posts against verified fact repositories and linguistic threat models.
+                    </p>
+                </div>
+
+                <!-- Interactive Text Area -->
+                <div class="max-w-4xl mx-auto space-y-4">
+                    <div class="relative">
+                        <textarea id="analyzerInput" rows="4" 
+                            class="w-full bg-zinc-950/90 border border-zinc-700/80 rounded-xl p-4 text-zinc-100 text-sm sm:text-base placeholder-zinc-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all font-sans"
+                            placeholder="Paste suspicious text, news headline, SMS link, or WhatsApp Hinglish forward here..."></textarea>
+                    </div>
+
+                    <!-- Search any current news, then paste its headline/article text above for fact-checking -->
+                    <div class="rounded-xl border border-blue-800/60 bg-blue-950/20 p-4 space-y-3">
+                        <div class="flex items-center gap-2 text-sm font-semibold text-blue-200">
+                            <i class="fa-solid fa-magnifying-glass"></i> Search News (Google News)
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input id="newsSearchInput" type="search" class="flex-1 min-w-0 bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500" placeholder="Search any news: e.g. India budget, ISRO launch, election..." onkeydown="if(event.key==='Enter'){searchNews();}">
+                            <button onclick="searchNews()" class="px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold flex items-center justify-center gap-2">
+                                <i class="fa-brands fa-google"></i> Search News
+                            </button>
+                        </div>
+                        <p class="text-[11px] leading-relaxed text-zinc-400">Google News search opens in a new tab. Sir can choose any news, copy its headline or article text, paste it in the box above, then click Run Fact-Check. Search results alone are not treated as proof.</p>
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                        <div class="text-xs text-zinc-400 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-info text-cyan-400"></i>
+                            <span>Supports: English, Hindi, Hinglish text, URL parameters & phone numbers</span>
+                            <span class="text-amber-300 ml-2">• Live fact-check lookup uses the server's optional Google Fact Check API key.</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                            <button onclick="resetAnalyzer()" class="px-4 py-2.5 rounded-xl border border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 text-sm font-medium transition-all flex items-center justify-center gap-2 w-1/2 sm:w-auto">
+                                <i class="fa-solid fa-eraser"></i> Clear
+                            </button>
+                            <button onclick="runNeuralAnalysis()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-bold text-sm shadow-lg shadow-cyan-600/20 transition-all flex items-center justify-center gap-2 w-1/2 sm:w-auto">
+                                <i class="fa-solid fa-bolt"></i>
+                                <span>Run Fact-Check</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3 text-xs text-zinc-400">
+                        
+                        <span id="apiKeyStatus" class="text-zinc-400">Checking backend…</span>
+                    </div>
+
+                    <!-- Quick Preset Test Chips -->
+                    <div class="pt-5 border-t border-zinc-800">
+                        <p class="text-xs font-mono text-zinc-400 mb-3 flex items-center gap-1.5">
+                            <i class="fa-solid fa-vial text-cyan-400"></i>
+                            <span>Click Quick Research Test Scenarios:</span>
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                            <button onclick="loadPreset(0)" class="text-xs p-2.5 rounded-xl bg-rose-950/30 text-rose-300 border border-rose-800/40 hover:bg-rose-900/40 transition-all text-left flex items-start gap-2">
+                                <i class="fa-solid fa-laptop text-rose-400 mt-0.5"></i>
+                                <div>
+                                    <strong class="block font-semibold">Fake Govt Scheme</strong>
+                                    <span class="text-[10px] text-zinc-400 line-clamp-1">PM Free Laptop Yojna 2026</span>
+                                </div>
+                            </button>
+                            <button onclick="loadPreset(1)" class="text-xs p-2.5 rounded-xl bg-amber-950/30 text-amber-300 border border-amber-800/40 hover:bg-amber-900/40 transition-all text-left flex items-start gap-2">
+                                <i class="fa-solid fa-building-columns text-amber-400 mt-0.5"></i>
+                                <div>
+                                    <strong class="block font-semibold">Bank Phishing SMS</strong>
+                                    <span class="text-[10px] text-zinc-400 line-clamp-1">SBI YONO Access Suspended</span>
+                                </div>
+                            </button>
+                            <button onclick="loadPreset(2)" class="text-xs p-2.5 rounded-xl bg-emerald-950/30 text-emerald-300 border border-emerald-800/40 hover:bg-emerald-900/40 transition-all text-left flex items-start gap-2">
+                                <i class="fa-solid fa-satellite text-emerald-400 mt-0.5"></i>
+                                <div>
+                                    <strong class="block font-semibold">Verified Science News</strong>
+                                    <span class="text-[10px] text-zinc-400 line-clamp-1">ISRO SpaDeX Satellite Launch</span>
+                                </div>
+                            </button>
+                            <button onclick="loadPreset(3)" class="text-xs p-2.5 rounded-xl bg-purple-950/30 text-purple-300 border border-purple-800/40 hover:bg-purple-900/40 transition-all text-left flex items-start gap-2">
+                                <i class="fa-solid fa-comments text-purple-400 mt-0.5"></i>
+                                <div>
+                                    <strong class="block font-semibold">Fake Currency Rumour</strong>
+                                    <span class="text-[10px] text-zinc-400 line-clamp-1">₹500 Note Ban Claim — Debunked</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading Spinner & Neural Stage Processing State -->
+            <div id="loaderBlock" class="hidden glass-panel rounded-2xl p-12 text-center">
+                <div class="relative w-20 h-20 mx-auto mb-6">
+                    <div class="absolute inset-0 border-4 border-cyan-500/20 rounded-full"></div>
+                    <div class="absolute inset-0 border-4 border-cyan-400 rounded-full border-t-transparent animate-spin"></div>
+                    <div class="absolute inset-0 flex items-center justify-center text-cyan-400 text-xl">
+                        <i class="fa-solid fa-network-wired animate-pulse"></i>
+                    </div>
+                </div>
+                <h3 id="loaderStageTitle" class="text-xl font-bold text-white font-serif">Analyzing input...</h3>
+                <p id="loaderStageSub" class="text-xs font-mono text-cyan-400 mt-2">Scanners -> ML classifier -> Fact registry</p>
+                <div class="max-w-xs mx-auto bg-zinc-900 rounded-full h-1.5 mt-6 overflow-hidden border border-zinc-800">
+                    <div id="loaderProgressBar" class="bg-gradient-to-r from-cyan-500 to-purple-500 h-full w-1/4 transition-all duration-300"></div>
+                </div>
+            </div>
+
+            <!-- Analysis Output Audit Dossier Section -->
+            <div id="auditReportContainer" class="hidden space-y-8">
+                
+                <!-- Report Controls Bar -->
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-zinc-900/90 p-4 rounded-xl border border-zinc-800 no-print">
+                    <div class="flex items-center gap-3 text-xs font-mono text-zinc-400">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                        <span>AUDIT ID: <strong id="auditIdText" class="text-white">VN-2026-9042X</strong></span>
+                        <span class="text-zinc-600">|</span>
+                        <span>LATENCY: <strong id="auditLatencyText" class="text-cyan-400">38ms</strong></span>
+                    </div>
+
+                    <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                        <button onclick="window.print()" class="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium rounded-lg border border-zinc-700 flex items-center gap-2 transition-all">
+                            <i class="fa-solid fa-file-pdf text-rose-400"></i> Export Academic Audit Report
+                        </button>
+                        <button onclick="copyAuditSummary()" class="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium rounded-lg border border-zinc-700 flex items-center gap-2 transition-all">
+                            <i class="fa-solid fa-copy text-cyan-400"></i> Copy Summary
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Verdict Banner Card -->
+                <div id="verdictCard" class="glass-panel rounded-2xl overflow-hidden border">
+                    <div id="verdictBannerHeader" class="px-6 py-3.5 text-sm font-bold tracking-wider uppercase flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b">
+                        <div class="flex items-center gap-2.5" id="verdictBadgeBox">
+                            <!-- Dynamic Verdict Badge -->
+                        </div>
+                        <span class="text-xs font-mono opacity-80" id="confidenceGradeText">CREDIBILITY METRIC: HIGH THREAT</span>
+                    </div>
+
+                    <div class="p-6 sm:p-8">
+                        <div class="mb-4">
+                            <span class="text-xs font-mono text-zinc-400 uppercase tracking-widest">Analyzed Text Input / Headline:</span>
+                            <h2 id="analyzedHeadline" class="text-2xl sm:text-3xl font-extrabold text-white mt-1 font-serif leading-tight">
+                                <!-- Dynamic Headline -->
+                            </h2>
+                        </div>
+
+                        <!-- Metadata Specs Grid -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 px-5 bg-zinc-950/70 rounded-xl border border-zinc-800 text-xs font-mono mb-6">
+                            <div>
+                                <span class="text-zinc-500 block">Transmission Channel:</span>
+                                <span id="metaChannel" class="text-cyan-300 font-semibold">WhatsApp Forward</span>
+                            </div>
+                            <div>
+                                <span class="text-zinc-500 block">Threat Category:</span>
+                                <span id="metaCategory" class="text-rose-400 font-semibold">Phishing & Identity Theft</span>
+                            </div>
+                            <div>
+                                <span class="text-zinc-500 block">Language / Syntax:</span>
+                                <span id="metaLanguage" class="text-purple-300 font-semibold">English / Hinglish Hybrid</span>
+                            </div>
+                            <div>
+                                <span class="text-zinc-500 block">Verification Status:</span>
+                                <span id="metaVerification" class="text-zinc-300">PIB Cross-Matched</span>
+                            </div>
+                        </div>
+
+                        <!-- Executive Contextual Brief -->
+                        <div>
+                            <h3 class="text-xs font-bold text-zinc-300 uppercase tracking-wider mb-2 flex items-center gap-2 font-mono">
+                                <i class="fa-solid fa-align-left text-cyan-400"></i> Executive Contextual Intelligence Brief
+                            </h3>
+                            <p id="executiveSummaryText" class="text-zinc-300 text-sm sm:text-base leading-relaxed bg-zinc-900/60 p-4 rounded-xl border border-zinc-800/80">
+                                <!-- Dynamic Brief -->
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Claim vs Ground Truth Reality Matrix -->
+                <div class="glass-panel rounded-2xl p-6 sm:p-8">
+                    <h3 class="text-lg font-bold text-white font-serif mb-6 flex items-center gap-2 border-b border-zinc-800 pb-4">
+                        <i class="fa-solid fa-code-compare text-cyan-400"></i>
+                        <span>Claim vs. Ground Truth Reality Matrix</span>
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- What text asserts -->
+                        <div class="bg-rose-950/20 border border-rose-900/40 rounded-xl p-5 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 px-3 py-1 bg-rose-900/60 text-rose-300 text-[10px] font-mono font-bold uppercase rounded-bl">
+                                Extracted Claim
+                            </div>
+                            <h4 class="text-rose-400 font-bold text-xs uppercase tracking-wider flex items-center gap-2 mb-3 font-mono">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Input Narrative Assertions
+                            </h4>
+                            <p id="matrixClaimText" class="text-zinc-300 text-sm leading-relaxed">
+                                <!-- Dynamic Claim Text -->
+                            </p>
+                        </div>
+
+                        <!-- Official Fact Proof -->
+                        <div class="bg-emerald-950/20 border border-emerald-900/40 rounded-xl p-5 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 px-3 py-1 bg-emerald-900/60 text-emerald-300 text-[10px] font-mono font-bold uppercase rounded-bl">
+                                Verified Fact
+                            </div>
+                            <h4 class="text-emerald-400 font-bold text-xs uppercase tracking-wider flex items-center gap-2 mb-3 font-mono">
+                                <i class="fa-solid fa-circle-check"></i> Official Investigated Reality
+                            </h4>
+                            <p id="matrixFactText" class="text-zinc-300 text-sm leading-relaxed">
+                                <!-- Dynamic Fact Text -->
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deep Forensics 3-Column Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Official Fact Repositories Cross-Check -->
+                    <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-4 flex items-center gap-2 border-b border-zinc-800 pb-3 font-mono">
+                                <i class="fa-solid fa-building-columns"></i> Official Source Check
+                            </h4>
+                            <div class="space-y-3" id="factSourcesList">
+                                <!-- Dynamic Sources -->
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-zinc-800">
+                            <span class="text-[10px] font-mono text-zinc-500 block mb-1">Database Verification:</span>
+                            <div class="flex items-center gap-2 text-xs font-mono text-emerald-400">
+                                <i class="fa-solid fa-database"></i> Curated registry + optional Google Fact Check API
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Linguistic Red Flags -->
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-4 flex items-center gap-2 border-b border-zinc-800 pb-3 font-mono">
+                            <i class="fa-solid fa-bug"></i> Linguistic Threat Vectors
+                        </h4>
+                        <ul class="space-y-2.5 text-xs text-zinc-300" id="linguisticFlagsList">
+                            <!-- Dynamic Red Flags -->
+                        </ul>
+                    </div>
+
+                    <!-- Technical & Domain Provenance -->
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h4 class="text-xs font-bold text-purple-400 uppercase tracking-wider mb-4 flex items-center gap-2 border-b border-zinc-800 pb-3 font-mono">
+                            <i class="fa-solid fa-network-wired"></i> Technical Provenance
+                        </h4>
+                        <p id="provenanceSummaryText" class="text-xs text-zinc-300 leading-relaxed mb-4">
+                            <!-- Dynamic Technical Details -->
+                        </p>
+                        <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800 font-mono text-[11px] text-zinc-400 space-y-1">
+                            <div><span class="text-zinc-500">Domain Match:</span> <span id="techDomainText" class="text-zinc-200">N/A</span></div>
+                            <div><span class="text-zinc-500">IP Host Range:</span> <span id="techIpText" class="text-zinc-200">Proxy/VPN</span></div>
+                            <div><span class="text-zinc-500">ML Heuristic:</span> <span id="techPatternText" class="text-zinc-200">Phishing Pattern</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Citizen Action Advisory -->
+                <div class="glass-panel rounded-2xl p-6 border-l-4 border-l-cyan-500">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-2 flex items-center gap-2 font-mono">
+                        <i class="fa-solid fa-shield-cat text-cyan-400 text-base"></i> Public Safety & Cyber Advisory
+                    </h3>
+                    <div id="safetyAdviceContainer" class="text-xs sm:text-sm text-zinc-300 leading-relaxed space-y-1.5">
+                        <!-- Dynamic Safety Guidance -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 2: AI MODEL BENCHMARKS & ARCHITECTURE (Academic Section) -->
+        <!-- ========================================================================= -->
+        <div id="view-benchmarks" class="hidden space-y-8">
+            <div class="glass-panel rounded-2xl p-6 sm:p-8">
+                <div class="border-b border-zinc-800 pb-6 mb-8">
+                    <span class="text-[11px] font-mono text-purple-400 uppercase tracking-widest bg-purple-950/60 px-3 py-1 rounded-full border border-purple-800/60">
+                        Model Evaluation & Performance Metrics
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white font-serif mt-3">
+                        Machine Learning Model Performance & Benchmarks
+                    </h2>
+                    <p class="text-zinc-400 text-xs sm:text-sm mt-1">
+                        Measured evaluation of the classifiers shipped with this project (retrain anytime with python backend/train.py).</p><p id="benchNote" class="text-xs text-amber-300 mt-2 leading-relaxed">Loading metrics...
+                    </p>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <!-- Chart 1: Accuracy & F1 Score -->
+                    <div class="bg-zinc-950/80 p-5 rounded-2xl border border-zinc-800">
+                        <h3 class="text-sm font-bold text-zinc-200 font-mono mb-4 flex items-center justify-between">
+                            <span>Accuracy vs F1-Score Comparison (%)</span>
+                            <span class="text-xs text-zinc-500">Classification Performance</span>
+                        </h3>
+                        <div class="h-64 relative">
+                            <canvas id="chartAccuracy"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 2: Latency vs Model Size -->
+                    <div class="bg-zinc-950/80 p-5 rounded-2xl border border-zinc-800">
+                        <h3 class="text-sm font-bold text-zinc-200 font-mono mb-4 flex items-center justify-between">
+                            <span>Inference Latency (ms) vs Parameter Count</span>
+                            <span class="text-xs text-zinc-500">Computational Overhead</span>
+                        </h3>
+                        <div class="h-64 relative">
+                            <canvas id="chartLatency"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics Table -->
+                <div class="mb-8 overflow-x-auto">
+                    <h3 class="text-sm font-bold text-zinc-200 font-mono mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-table text-cyan-400"></i> Detailed Model Metric Comparison Matrix
+                    </h3>
+                    <table class="w-full text-xs text-left font-mono border-collapse">
+                        <thead>
+                            <tr class="bg-zinc-900 text-zinc-400 border-b border-zinc-800">
+                                <th class="p-3">Model Architecture</th>
+                                <th class="p-3">Precision</th>
+                                <th class="p-3">Recall</th>
+                                <th class="p-3">F1-Score</th>
+                                <th class="p-3">Accuracy</th>
+                                <th class="p-3">Latency (ms)</th>
+                                <th class="p-3">Parameters</th>
+                            </tr>
+                        </thead>
+                        <tbody id="metricsBody" class="divide-y divide-zinc-800/60 text-zinc-300"></tbody>
+                    </table>
+                </div>
+
+                <!-- Neural Architecture Diagram Pipeline -->
+                <div class="bg-zinc-950 p-6 rounded-2xl border border-zinc-800">
+                    <h3 class="text-sm font-bold text-zinc-200 font-mono mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-sitemap text-cyan-400"></i> VeriNews End-to-End Processing Architecture
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-center text-xs font-mono">
+                        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-800 text-cyan-300">
+                            <strong class="block text-white mb-1">1. Input Ingestion</strong>
+                            <span>Text, Hinglish & URL Tokenization</span>
+                        </div>
+                        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-800 text-purple-300">
+                            <strong class="block text-white mb-1">2. ML Classifier</strong>
+                            <span>Word + char n-gram TF-IDF → LogReg</span>
+                        </div>
+                        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-800 text-amber-300">
+                            <strong class="block text-white mb-1">3. Linguistic Scanners</strong>
+                            <span>Urgency & Sensational Syntax Check</span>
+                        </div>
+                        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-800 text-emerald-300">
+                            <strong class="block text-white mb-1">4. Fact Cross-Match</strong>
+                            <span>Curated Registry + Fact Check API</span>
+                        </div>
+                        <div class="bg-zinc-900 p-3.5 rounded-xl border border-zinc-800 text-rose-300">
+                            <strong class="block text-white mb-1">5. Dossier Output</strong>
+                            <span>Claim vs Reality Matrix & Audit Report</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 3: LIVE MISINFORMATION & SCAM RADAR (Real-time Tracker) -->
+        <!-- ========================================================================= -->
+        <div id="view-radar" class="hidden space-y-8">
+            <div class="glass-panel rounded-2xl p-6 sm:p-8">
+                <!-- Header & Controls -->
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8 pb-6 border-b border-zinc-800">
+                    <div>
+                        <span class="text-[11px] font-mono text-amber-400 uppercase tracking-widest bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800/60">
+                            Active Threat Intelligence
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white font-serif mt-2 flex items-center gap-2">
+                            <i class="fa-solid fa-radar text-amber-500 animate-pulse"></i> Misinformation & Digital Scam Radar
+                        </h2>
+                        <p class="text-zinc-400 text-xs sm:text-sm mt-1">Curated repository of source-backed hoaxes, phishing campaigns and fraudulent schemes.</p>
+                    </div>
+
+                    <button onclick="openSubmitModal()" class="px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-mono font-bold transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Submit Suspicious Message
+                    </button>
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                    <div class="relative w-full sm:w-72">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-zinc-500 text-xs"></i>
+                        <input type="text" id="radarSearch" onkeyup="filterRadar()" placeholder="Search active scams..." 
+                            class="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-200 focus:outline-none focus:border-amber-500">
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                        <button onclick="filterRadarCategory('ALL')" class="px-3 py-1.5 rounded-lg text-xs font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">All Threats</button>
+                        <button onclick="filterRadarCategory('SCAM')" class="px-3 py-1.5 rounded-lg text-xs font-mono bg-rose-950/40 text-rose-400 border border-rose-800/40">Phishing/Scams</button>
+                        <button onclick="filterRadarCategory('UNVERIFIED')" class="px-3 py-1.5 rounded-lg text-xs font-mono bg-amber-950/40 text-amber-400 border border-amber-800/40">Unverified Claims</button>
+                        <button onclick="filterRadarCategory('REAL')" class="px-3 py-1.5 rounded-lg text-xs font-mono bg-emerald-950/40 text-emerald-400 border border-emerald-800/40">Verified Real</button>
+                    </div>
+                </div>
+
+                <!-- Radar Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="radarCardsGrid">
+                    <!-- Dynamic Radar Cards generated via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 4: ACADEMIC DOCUMENTATION & VIVA PREPARATION GUIDE -->
+        <!-- ========================================================================= -->
+        <div id="view-docs" class="hidden space-y-8">
+            <div class="glass-panel rounded-2xl p-6 sm:p-10 space-y-8">
+                
+                <!-- Academic Header -->
+                <div class="border-b border-zinc-800 pb-6">
+                    <span class="text-[11px] font-mono text-emerald-400 uppercase tracking-widest bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/60">
+                        Academic Project Submission Guide
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold text-white font-serif mt-3">
+                        Project Synopsis & Viva Defense Reference
+                    </h2>
+                    <p class="text-zinc-400 text-xs sm:text-sm mt-2">
+                        Complete research abstract, dataset specifications, methodology overview, and anticipated viva examination questions.
+                    </p>
+                </div>
+
+                <!-- Research Abstract & Objectives -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-zinc-950/80 p-6 rounded-2xl border border-zinc-800 space-y-3">
+                        <h3 class="text-sm font-bold text-cyan-400 font-mono uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-file-lines"></i> Project Abstract
+                        </h3>
+                        <p class="text-xs text-zinc-300 leading-relaxed">
+                            Digital communication platforms in India suffer from an unprecedented rise in fake news and automated financial phishing scams. This project presents <strong>VeriNews AI v3.1</strong>, an integrated pipeline combining a TF-IDF (word + character n-gram) machine-learning classifier with rule-based linguistic and URL threat scanners, curated fact-registry retrieval and optional Google Fact Check lookup. Transformer fine-tuning (XLM-R / MuRIL) is future work.
+                        </p>
+                    </div>
+
+                    <div class="bg-zinc-950/80 p-6 rounded-2xl border border-zinc-800 space-y-3">
+                        <h3 class="text-sm font-bold text-purple-400 font-mono uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye"></i> Research Objectives
+                        </h3>
+                        <ul class="text-xs text-zinc-300 space-y-2 list-disc list-inside">
+                            <li>Process multi-lingual text inputs including English, Hindi, and Hinglish forwards.</li>
+                            <li>Detect emotional urgency manipulation, fake domain patterns, and financial phishing triggers.</li>
+                            <li>Compare claims with curated, source-backed examples; mark unmatched claims as UNVERIFIED instead of guessing.</li>
+                            <li>Generate comprehensive, academic-grade reality matrix dossiers instead of naive percentage scores.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Datasets Used Section -->
+                <div class="bg-zinc-950/80 p-6 rounded-2xl border border-zinc-800">
+                    <h3 class="text-sm font-bold text-amber-400 font-mono uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-database"></i> Datasets Used
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                        <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
+                            <strong class="block text-white font-mono mb-1">Template-generated seed set</strong>
+                            <span class="text-zinc-400 leading-relaxed block">360 synthetic SCAM / HOAX / LEGIT messages in English, Hindi and Hinglish; evaluated with template-grouped cross-validation.</span>
+                        </div>
+                        <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
+                            <strong class="block text-white font-mono mb-1">Curated fact registry</strong>
+                            <span class="text-zinc-400 leading-relaxed block">5 source-backed cases (PIB, RBI, ISRO, news reports) used for similarity retrieval.</span>
+                        </div>
+                        <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
+                            <strong class="block text-white font-mono mb-1">Future work: LIAR / FakeNewsNet</strong>
+                            <span class="text-zinc-400 leading-relaxed block">Public datasets planned for transformer fine-tuning; not used by the current model.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Viva Preparation Accordion -->
+                <div class="space-y-4">
+                    <h3 class="text-base font-bold text-white font-serif flex items-center gap-2">
+                        <i class="fa-solid fa-circle-question text-emerald-400"></i> Professor Viva Q&A Defense Guide
+                    </h3>
+
+                    <div class="space-y-3">
+                        <details class="bg-zinc-900/90 rounded-xl border border-zinc-800 p-4 group">
+                            <summary class="font-semibold text-xs text-cyan-300 cursor-pointer flex justify-between items-center font-mono">
+                                <span>Q1: How does the system handle Hinglish (mixed Hindi + English) text forwards?</span>
+                                <i class="fa-solid fa-chevron-down text-zinc-500 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <p class="text-xs text-zinc-300 mt-3 leading-relaxed border-t border-zinc-800/80 pt-3">Word n-grams plus character n-grams (2–5) in TF-IDF capture spelling variants of romanised Hindi (e.g. band/bandh, jaldi/jldi) without a Hindi tokenizer, and the same character features cover Devanagari. A multilingual transformer (XLM-R / MuRIL) would handle code-mixing better and is future work.</p>
+                        </details>
+
+                        <details class="bg-zinc-900/90 rounded-xl border border-zinc-800 p-4 group">
+                            <summary class="font-semibold text-xs text-cyan-300 cursor-pointer flex justify-between items-center font-mono">
+                                <span>Q2: Why use Transformer architectures over traditional SVM or Random Forest models?</span>
+                                <i class="fa-solid fa-chevron-down text-zinc-500 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <p class="text-xs text-zinc-300 mt-3 leading-relaxed border-t border-zinc-800/80 pt-3">The deployed model is TF-IDF + Logistic Regression: fast (about 1 ms), gives class probabilities, and was compared with Linear SVM and Naive Bayes in the Benchmarks tab (measured, not quoted). Transformers capture context better but need a GPU and far more labelled data (e.g. LIAR); they were not trained here.</p>
+                        </details>
+
+                        <details class="bg-zinc-900/90 rounded-xl border border-zinc-800 p-4 group">
+                            <summary class="font-semibold text-xs text-cyan-300 cursor-pointer flex justify-between items-center font-mono">
+                                <span>Q3: How does the system prevent AI hallucination during fact-checking?</span>
+                                <i class="fa-solid fa-chevron-down text-zinc-500 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <p class="text-xs text-zinc-300 mt-3 leading-relaxed border-t border-zinc-800/80 pt-3">The ML score never decides REAL or FAKE. Those verdicts come only from source-backed evidence: the curated registry or a published Google Fact Check review. Without evidence the result is UNVERIFIED. The classifier only flags scam/hoax-style language, and scam detection relies on URL, urgency and credential-request patterns. Limitation: the training set is small and synthetic, so accuracy figures are indicative only.</p>
+                        </details>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal for Submitting Suspicious Message -->
+    <div id="submitModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="glass-panel rounded-2xl max-w-md w-full p-6 space-y-4 relative border border-zinc-700">
+            <button onclick="closeSubmitModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-lg font-bold text-white font-serif flex items-center gap-2">
+                <i class="fa-solid fa-upload text-amber-400"></i> Submit Suspicious Message
+            </h3>
+            <p class="text-xs text-zinc-400">Contribute viral messages or phishing SMS to enrich our research training dataset.</p>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="text-[11px] font-mono text-zinc-400 block mb-1">Source Platform:</label>
+                    <select id="modalPlatform" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-xs text-zinc-200 focus:outline-none">
+                        <option>WhatsApp Forward</option>
+                        <option>SMS Text Message</option>
+                        <option>Facebook / Instagram Post</option>
+                        <option>Web Portal Link</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[11px] font-mono text-zinc-400 block mb-1">Message Content:</label>
+                    <textarea id="modalText" rows="3" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-xs text-zinc-200 focus:outline-none" placeholder="Paste the suspicious message here..."></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeSubmitModal()" class="px-3.5 py-2 rounded-lg border border-zinc-700 text-xs text-zinc-400">Cancel</button>
+                <button onclick="submitMessageToDataset()" class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs">Submit for Review</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="no-print border-t border-zinc-800/80 bg-zinc-950 py-8 text-center text-xs text-zinc-500 font-mono mt-auto">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>VeriNews AI v3.1 • Misinformation & Cyber Scam Intelligence Engine</p>
+            <p class="text-zinc-600 mt-1">Academic Research & University Viva Project Presentation</p>
+        </div>
+    </footer>
+
+    <script>
+        // Preset Scenarios Data Store
+        const presetScenarios = [
+            {
+                id: "VN-2026-LAPTOP-SCAM",
+                type: "SCAM",
+                headline: "PIB Notice: Prime Minister Free Laptop Scheme 2026 registration open. Click link to get Rs 5000 allowance immediately.",
+                channel: "WhatsApp Forward / SMS Broadcast",
+                category: "Cyber Fraud & Identity Harvesting",
+                language: "English / Hindi Scheme Phishing",
+                verification: "PIB Fact-Check Confirmed Fraud",
+                summary: "The viral message claims that the Ministry of Education and Prime Minister Office are issuing free laptops and a cash allowance of ₹5000 to all students who register on an external web domain (.xyz link).",
+                claim: "Government is giving free laptops and ₹5,000 cash to students via the provided web registration link.",
+                fact: "PIB Fact Check confirmed NO such scheme exists. Government scheme links are NEVER hosted on .xyz or bit.ly domains. The link harvested personal banking details.",
+                sources: [
+                    "PIB Fact Check Official Twitter & Website Advisory",
+                    "Ministry of Education Security Portal (education.gov.in)",
+                    "National Cyber Crime Reporting Portal (cybercrime.gov.in)"
+                ],
+                redFlags: [
+                    "Non-government domain extension (.xyz / .top instead of .gov.in)",
+                    "Artificial deadline panic: 'Only 200 laptops remaining!'",
+                    "Promised financial gain requiring personal banking details",
+                    "Encourages mass forwarding to 10 WhatsApp groups"
+                ],
+                provenance: "Spreads through malicious clickbait social networks targeting students and job applicants.",
+                domain: "pm-free-laptop-scheme-2026.xyz",
+                ip: "Offshore Proxy Host Range",
+                pattern: "High-Risk Credential Harvesting Phishing Trap",
+                advice: [
+                    "🚨 DO NOT click on external bit.ly or .xyz web links.",
+                    "🚨 Remember: Official Indian government schemes ALWAYS end in .gov.in or .nic.in.",
+                    "🚨 Report fraudulent links on cybercrime.gov.in or helpline 1930."
+                ]
+            },
+            {
+                id: "VN-2026-SBI-PHISHING",
+                type: "SCAM",
+                headline: "URGENT: Your SBI Account YONO access suspended due to missing PAN verification. Update immediately at sbi-pan-kyc.com or lose funds.",
+                channel: "Direct SMS Smishing",
+                category: "Banking Phishing & Financial Extortion",
+                language: "English SMS Smishing",
+                verification: "CERT-In Cyber Security Alert",
+                summary: "A targeted SMS warns the recipient that their State Bank of India YONO account will be frozen within 24 hours unless they update their PAN card details through a fake banking website.",
+                claim: "Bank has suspended YONO access and demands immediate PAN update via link to avoid account closure.",
+                fact: "State Bank of India (SBI) NEVER sends SMS with web links to update PAN/KYC. Official banking updates occur exclusively inside the secure YONO application.",
+                sources: [
+                    "State Bank of India (SBI) Official Cyber Advisory",
+                    "CERT-In Financial Fraud Warning Bulletin",
+                    "Reserve Bank of India (RBI) Security Guidelines"
+                ],
+                redFlags: [
+                    "Sent from an individual 10-digit mobile number instead of SBI official sender ID (e.g., SBIBNK)",
+                    "Spoofed domain 'sbi-pan-kyc.com' mimicking official SBI portal",
+                    "Extreme panic urgency threat: 'Account suspended in 24 hours'",
+                    "Asks for card numbers, CVV, or SMS OTPs"
+                ],
+                provenance: "Direct SMS gateway spoofing designed to redirect users to credential-harvesting web forms.",
+                domain: "sbi-pan-kyc.com (Registered 2 days ago)",
+                ip: "Dynamic Anonymized Cloud VPS",
+                pattern: "High-Confidence Banking Smishing Attack",
+                advice: [
+                    "🚨 NEVER enter bank login passwords or OTPs on links received via SMS.",
+                    "🚨 Forward suspicious banking SMS to 1909 or report to phish@sbi.co.in."
+                ]
+            },
+            {
+                id: "VN-2026-ISRO-SPADEX",
+                type: "REAL",
+                headline: "ISRO successfully launched the SpaDeX satellites aboard PSLV-C60 on 30 December 2024.",
+                channel: "Official Press Bureau & Mainstream Media",
+                category: "Space Science & Technology",
+                language: "English Technical Journalism",
+                verification: "ISRO Press Release Verified",
+                summary: "ISRO records confirm that PSLV-C60 launched the SpaDeX-A and SpaDeX-B satellites on 30 December 2024.",
+                claim: "ISRO launched the two SpaDeX satellites aboard PSLV-C60 on 30 December 2024.",
+                fact: "Verified: ISRO’s official mission records list PSLV-C60/SpaDeX on 30 December 2024 with SpaDeX-A and SpaDeX-B as payloads.",
+                sources: [
+                    "ISRO Launch Missions: https://www.isro.gov.in/LaunchMissions.html",
+                    "ISRO SpaDeX Mission: https://www.isro.gov.in/mission_SpaDeX.html",
+                    "ISRO Annual Report 2024–25 (Department of Space)"
+                ],
+                redFlags: [
+                    "No malicious red flags detected.",
+                    "Uses objective, technical reporting language",
+                    "Attributed directly to named space officials and official centers"
+                ],
+                provenance: "Matched against ISRO’s official launch-mission record and SpaDeX mission page.",
+                domain: "isro.gov.in (Official Government Entity)",
+                ip: "National Informatics Centre (NIC) Server",
+                pattern: "Verified Authentic News Communique",
+                advice: [
+                    "✅ Fully Authentic News. Safe for academic reference and public dissemination."
+                ]
+            },
+            {
+                id: "VN-2026-HINGLISH-CURRENCY",
+                type: "FAKE",
+                headline: "Khabar aa rahi hai ki kal se saare 500 ke note band hone wale hain. Jaldi bank me jama karein ye video sabhi ko forward karein.",
+                channel: "WhatsApp Viral Voice Note / Forward",
+                category: "Financial Misinformation & Hoax",
+                language: "Hinglish Code-Mixed Viral Forward",
+                verification: "PIB Fact Check — FALSE CLAIM (12 July 2025)",
+                summary: "PIB Fact Check debunked the viral claim that ₹500 notes would be discontinued. No such RBI instruction was issued; ₹500 notes remain legal tender.",
+                claim: "All ₹500 currency notes will become invalid legal tender starting tomorrow.",
+                fact: "FALSE: PIB Fact Check stated that RBI had issued no instruction to discontinue ₹500 notes and that these notes would continue to be legal tender. The viral message confused an RBI instruction to increase ATM availability of ₹100/₹200 notes with discontinuation of ₹500 notes.",
+                sources: [
+                    "PIB Fact Check clarification (reported by Akashvani, 2 Jan 2026): https://newsonair.gov.in/government-debunks-claim-on-discontinuation-of-%E2%82%B9500-notes/",
+                    "RBI FAQ — ₹500 notes remain legal tender unless withdrawn: https://www.rbi.org.in/scripts/FAQView.aspx?Id=136&fn=2753",
+                    "BOOM Fact Check (5 June 2025): https://www.boomlive.in/fact-check/fact-check-rbi-rs500-note-ban-discontinued-march-2026-viral-false-claim-28745"
+                ],
+                redFlags: [
+                    "Lacks official RBI press release document link",
+                    "Employs panic-inducing emotional triggers ('Jaldi jama karein')",
+                    "Urges mass forwarding without citing official news sources",
+                    "Code-mixed Hinglish syntax commonly used in viral hoaxes"
+                ],
+                provenance: "Matched to PIB Fact Check clarification and RBI's published legal-tender FAQ.",
+                domain: "Social Messenger Cascading Network",
+                ip: "Encrypted P2P Broadcast",
+                pattern: "Debunked ₹500 Note Discontinuation Rumour",
+                advice: [
+                    "ℹ️ Always verify currency news on the official RBI portal (rbi.org.in).",
+                    "ℹ️ Refrain from forwarding unverified financial rumors that induce public panic."
+                ]
+            },
+            {
+                id: "VN-2026-RAHUL-COLUMBIA-REPORT",
+                type: "REAL",
+                headline: "‘India sitting on economic disaster’: Rahul Gandhi flags unemployment, education crisis at Columbia",
+                channel: "Cross-checked current news report",
+                category: "Verified Event / Public Statement Reporting",
+                language: "English / Hindi",
+                verification: "VERIFIED — independently reported by multiple news outlets (18 November 2026)",
+                summary: "The report that Rahul Gandhi made remarks about unemployment and education at Columbia University on 18 November 2026 is corroborated by multiple independent news reports.",
+                claim: "Rahul Gandhi spoke at Columbia University and made remarks describing India's economic situation as an economic disaster, while discussing unemployment and education.",
+                fact: "VERIFIED REPORTING: Moneycontrol (ANI), Aaj Tak, Times of India and Amar Ujala published matching reports dated 18 November 2026. This verifies that the statement was reported and attributed to the Columbia University event; it does NOT independently prove the political/economic opinion in the quote.",
+                sources: [
+                    "Moneycontrol / ANI (18 Nov 2026): https://www.moneycontrol.com/news/india/india-sitting-on-economic-disaster-says-rahul-gandhi-at-columbia-university-14082946.html",
+                    "Aaj Tak (18 Nov 2026): https://www.aajtak.in/india/news/story/rahul-gandhi-columbia-university-questions-unemployment-election-irregularities-ntc-acwi-rpti-2699259-2026-11-18",
+                    "Times of India (18 Nov 2026): https://timesofindia.indiatimes.com/india/india-sitting-on-economic-disaster-rahul-gandhi-flags-unemployment-education-crisis-at-columbia/articleshow/135945307.cms",
+                    "Amar Ujala (18 Nov 2026): https://www.amarujala.com/world/rahul-gandhi-india-economic-disaster-unemployment-columbia-university-2026-11-18"
+                ],
+                redFlags: [
+                    "No mismatch found in the event, speaker, location or main topic across the cited reports.",
+                    "The quote is a political opinion/assessment; verifying that it was said is different from proving the opinion itself true."
+                ],
+                provenance: "Matched against four independently published reports dated 18 November 2026.",
+                domain: "moneycontrol.com / aajtak.in / timesofindia.indiatimes.com / amarujala.com",
+                ip: "Not applicable — news report verification",
+                pattern: "Cross-source corroborated reporting",
+                advice: [
+                    "Use the linked reports to confirm the date and context.",
+                    "Treat the quoted economic assessment as Rahul Gandhi's opinion, not as a proven statistical conclusion."
+                ]
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const [h, k] = await Promise.all([fetch('/api/health').then(r => r.json()), fetch('/api/kb').then(r => r.json())]);
+                presetScenarios.splice(0, presetScenarios.length, ...k);
+                setBackendStatus(true, h);
+            } catch (e) { setBackendStatus(false); }
+        });
+
+        function switchTab(tabId) {
+            const views = ['analyzer', 'benchmarks', 'radar', 'docs'];
+            views.forEach(v => {
+                document.getElementById('view-' + v).classList.add('hidden');
+                document.getElementById('tab-btn-' + v).className = "px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all text-zinc-400 hover:text-white hover:bg-zinc-800/60 flex items-center gap-2";
+            });
+
+            document.getElementById('view-' + tabId).classList.remove('hidden');
+            
+            let activeColor = "text-cyan-400 bg-cyan-500/15 border-cyan-500/30";
+            if(tabId === 'benchmarks') activeColor = "text-purple-400 bg-purple-500/15 border-purple-500/30";
+            if(tabId === 'radar') activeColor = "text-amber-400 bg-amber-500/15 border-amber-500/30";
+            if(tabId === 'docs') activeColor = "text-emerald-400 bg-emerald-500/15 border-emerald-500/30";
+
+            document.getElementById('tab-btn-' + tabId).className = `px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 border ${activeColor}`;
+
+            if(tabId === 'benchmarks') {
+                initBenchmarkCharts();
+            }
+            if(tabId === 'radar') {
+                renderRadarCards('ALL');
+            }
+        }
+
+        function searchNews() {
+            const field = document.getElementById('newsSearchInput');
+            const query = (field.value || '').trim();
+            if (!query) {
+                alert('Please enter a topic or news headline to search.');
+                field.focus();
+                return;
+            }
+            const url = 'https://news.google.com/search?q=' + encodeURIComponent(query) + '&hl=en-IN&gl=IN&ceid=IN%3Aen';
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+
+        function resetAnalyzer() {
+            document.getElementById('analyzerInput').value = '';
+            document.getElementById('auditReportContainer').classList.add('hidden');
+        }
+
+        function loadPreset(index) {
+            const data = presetScenarios[index];
+            document.getElementById('analyzerInput').value = data.headline;
+            renderAuditReport(data);
+        }
+
+        function configureFactCheckKey() {
+            const existing = localStorage.getItem('verinews_google_factcheck_key') || '';
+            const key = prompt('Paste your Google Fact Check Tools API key. Create/enable the Fact Check Tools API in Google Cloud first. The key is stored only in this browser.', existing);
+            if (key === null) return;
+            if (!key.trim()) {
+                localStorage.removeItem('verinews_google_factcheck_key');
+                document.getElementById('apiKeyStatus').innerText = 'API key removed. Live ClaimReview lookup is disabled.';
+                return;
+            }
+            localStorage.setItem('verinews_google_factcheck_key', key.trim());
+            document.getElementById('apiKeyStatus').innerText = 'Fact Check API key saved in this browser. Live ClaimReview lookup enabled.';
+        }
+
+        // Local evidence-backed examples let the academic demo work without an API key.
+        // These are narrow known-claim matches, NOT a general-purpose truth detector.
+        function matchLocalEvidence(input) {
+            const t = input.toLowerCase().replace(/₹/g, ' rs ').replace(/[^\p{L}\p{N}.]+/gu, ' ');
+            const has = (...terms) => terms.some(term => t.includes(term));
+
+            // Current, cross-source corroborated Rahul Gandhi / Columbia University report (18 Nov 2026).
+            // This verifies the report that the remarks were made, not the truth of the political opinion.
+            if (has('rahul gandhi', 'rahul') && has('columbia', 'columbia university') &&
+                has('economic disaster', 'sitting on economic disaster') &&
+                has('unemployment', 'education crisis', 'education')) {
+                return presetScenarios.find(item => item.id === 'VN-2026-RAHUL-COLUMBIA-REPORT');
+            }
+
+            // Debunked ₹500-note discontinuation rumour (PIB Fact Check + RBI FAQ).
+            if (has('500') && has('note', 'currency', 'rupee', 'rupaye', 'rs') &&
+                has('ban', 'band', 'discontinue', 'discontinued', 'बंद', 'legal tender', 'march 2026', 'march 202') &&
+                has('rbi', 'note', 'atm', 'currency', 'rupee', 'rupaye', 'rupees')) {
+                return presetScenarios[3];
+            }
+            // Specific fraudulent student-laptop registration message in the demo dataset.
+            if (has('free laptop', 'muft laptop', 'free लैपटॉप') &&
+                has('5000', 'registration', 'register', 'scheme', 'yojana', '.xyz', 'bit.ly')) {
+                return presetScenarios[0];
+            }
+            // Specific SBI/YONO PAN-link phishing pattern in the demo dataset.
+            if (has('sbi', 'yono') && has('pan', 'kyc') && has('sbi-pan-kyc.com', 'link', 'update')) {
+                return presetScenarios[1];
+            }
+            // Known ISRO SpaDeX launch fact.
+            if (has('spadex', 'spa dex') && has('pslv c60', 'pslv-c60', '30 december 2024', '30 dec 2024', 'launched', 'launch')) {
+                return presetScenarios[2];
+            }
+            return null;
+        }
+
+        function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+        function setBackendStatus(ok, h) {
+            const el = document.getElementById('apiKeyStatus');
+            el.className = ok ? 'text-emerald-400' : 'text-amber-300';
+            el.innerText = ok ? `Backend online · ML model ${h.model_loaded ? 'loaded' : 'MISSING (run python backend/train.py)'} · Fact Check API ${h.factcheck_configured ? 'configured' : 'not configured (set GOOGLE_FACTCHECK_API_KEY)'} · ${h.kb_entries} registry entries`
+                : 'Backend offline — limited offline demo (curated examples only). Start it with: python backend/app.py';
+        }
+        async function runNeuralAnalysis() {
+            const text = document.getElementById('analyzerInput').value.trim();
+            if (!text) { alert('Please enter text, news headline, or SMS message to analyze.'); return; }
+            const loader = document.getElementById('loaderBlock'), pBar = document.getElementById('loaderProgressBar');
+            document.getElementById('auditReportContainer').classList.add('hidden');
+            loader.classList.remove('hidden');
+            document.getElementById('loaderStageTitle').innerText = 'Analyzing on VeriNews backend...';
+            document.getElementById('loaderStageSub').innerText = 'Scanners -> ML classifier -> Fact registry -> Fact Check API';
+            pBar.style.width = '60%';
+            let data = null;
+            try {
+                const r = await fetch('/api/analyze', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text})});
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                data = await r.json();
+            } catch (e) { setBackendStatus(false); }
+            loader.classList.add('hidden'); pBar.style.width = '0%';
+            if (data) renderAuditReport(data); else await runLocalAnalysisLegacy();
+        }
+
+        async function runLocalAnalysisLegacy() {
+            const text = document.getElementById('analyzerInput').value.trim();
+            if(!text) {
+                alert('Please enter text, news headline, or SMS message to analyze.');
+                return;
+            }
+            const loader = document.getElementById('loaderBlock');
+            const report = document.getElementById('auditReportContainer');
+            const pBar = document.getElementById('loaderProgressBar');
+            report.classList.add('hidden');
+            loader.classList.remove('hidden');
+            document.getElementById('loaderStageTitle').innerText = 'Searching verified fact-check records...';
+            document.getElementById('loaderStageSub').innerText = 'Google Fact Check Claim Search API';
+            pBar.style.width = '55%';
+
+            try {
+                const normalizeClaim = value => value.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+                const preset = matchLocalEvidence(text) || presetScenarios.find(item => normalizeClaim(text) === normalizeClaim(item.headline));
+                if (preset) {
+                    renderAuditReport(preset);
+                    return;
+                }
+
+                const apiKey = localStorage.getItem('verinews_google_factcheck_key');
+                if (!apiKey) {
+                    renderAuditReport(buildUnverifiedReport(text, 'Google Fact Check API key is not configured. Connect the API to search live fact-check records.'));
+                    return;
+                }
+
+                const endpoint = new URL('https://factchecktools.googleapis.com/v1alpha1/claims:search');
+                endpoint.searchParams.set('query', text.slice(0, 450));
+                // Let Google search across languages when Hindi/Hinglish text is submitted.
+                endpoint.searchParams.set('pageSize', '10');
+                endpoint.searchParams.set('key', apiKey);
+                const response = await fetch(endpoint.toString());
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    throw new Error('Google API returned HTTP ' + response.status + '. Check that the API is enabled and the key is valid. ' + errorBody.slice(0, 180));
+                }
+                const result = await response.json();
+                const claims = Array.isArray(result.claims) ? result.claims : [];
+                const reviews = claims.flatMap(claim => (claim.claimReview || []).map(review => ({claim, review})));
+                const inputTerms = new Set(normalizeClaim(text).split(' ').filter(word => word.length > 2));
+                const ranked = reviews.map(item => {
+                    const claimTerms = new Set(normalizeClaim(item.claim.text || '').split(' ').filter(word => word.length > 2));
+                    const overlap = [...inputTerms].filter(word => claimTerms.has(word)).length;
+                    return { ...item, relevance: inputTerms.size ? overlap / inputTerms.size : 0 };
+                }).sort((a, b) => b.relevance - a.relevance);
+                const best = ranked.find(item => item.review.textualRating && item.relevance >= 0.35);
+                if (!best) {
+                    renderAuditReport(buildUnverifiedReport(text, 'No sufficiently close published fact-check review was found. Search results that do not closely match the claim are ignored. This does not mean the news is fake.'));
+                } else {
+                    renderAuditReport(buildFactCheckReport(text, best));
+                }
+            } catch (error) {
+                renderAuditReport(buildUnverifiedReport(text, 'Live lookup could not be completed: ' + error.message));
+            } finally {
+                loader.classList.add('hidden');
+                pBar.style.width = '0%';
+            }
+        }
+
+        function buildFactCheckReport(input, item) {
+            const review = item.review || {};
+            const claim = item.claim || {};
+            const rating = String(review.textualRating || 'Rating not supplied').trim();
+            const ratingLower = rating.toLowerCase();
+            let type = 'UNVERIFIED';
+            if (/\b(false|fake|fabricated|incorrect|misleading|pants on fire|mostly false)\b/.test(ratingLower)) type = 'FAKE';
+            else if (/\b(true|correct|accurate|verified|mostly true)\b/.test(ratingLower)) type = 'REAL';
+            const publisher = review.publisher && review.publisher.name ? review.publisher.name : 'Fact-check publisher';
+            const reviewUrl = review.url || '';
+            const reviewedClaim = claim.text || input;
+            const explanation = type === 'REAL'
+                ? 'A published fact-check review matching this claim rated it: ' + rating + '. Read the linked review and confirm that its date and context match the submitted news.'
+                : type === 'FAKE'
+                    ? 'A published fact-check review matching this claim rated it: ' + rating + '. Check the linked review to confirm that the claim, date, and context are the same.'
+                    : 'A fact-check review was found, but its rating is not a clear true/false verdict: ' + rating + '. Treat this as requiring human review.';
+            const sources = [publisher + (reviewUrl ? ': ' + reviewUrl : ''), 'Google Fact Check Tools — Claim Search API'];
+            return {
+                id: 'VN-LIVE-' + Date.now(), type, headline: input,
+                channel: 'Live fact-check database lookup', category: 'Published ClaimReview Match',
+                language: 'English / Hindi / Hinglish', verification: 'Published rating: ' + rating,
+                summary: 'Closest fact-check record: ' + reviewedClaim,
+                claim: input, fact: explanation,
+                sources, redFlags: ['Verdict is based on a published fact-check review, not keyword guessing.', 'Confirm that the matched review refers to the same date, place, person, and context.'],
+                provenance: 'Matched against a ClaimReview record indexed by Google Fact Check Tools.',
+                domain: reviewUrl ? new URL(reviewUrl).hostname : 'Publisher URL not supplied',
+                ip: 'Not applicable', pattern: 'External fact-check record match',
+                advice: ['Open the source link and read the full fact-check before relying on the verdict.', 'If the context or date differs, treat the result as UNVERIFIED.']
+            };
+        }
+
+        function buildUnverifiedReport(input, reason) {
+            return {
+                id: 'VN-LIVE-' + Date.now(), type: 'UNVERIFIED', headline: input,
+                channel: 'User-submitted text', category: 'Claim Requires Independent Fact-Checking',
+                language: 'English / Hindi / Hinglish', verification: 'UNVERIFIED — no conclusive matching review',
+                summary: reason,
+                claim: input,
+                fact: reason + ' The system will not label a claim REAL or FAKE without a relevant evidence record. Check the original date and context and compare with primary sources.',
+                sources: ['Google Fact Check Tools API documentation: https://developers.google.com/fact-check/tools/api', 'PIB Fact Check: https://factcheck.pib.gov.in/', 'Relevant official department or agency website'],
+                redFlags: ['No conclusive fact-check rating was retrieved.', 'No search result is not proof that a claim is false.', 'A headline may be incomplete or missing date/context.'],
+                provenance: 'Live fact-check lookup attempted; no conclusive ClaimReview rating was available.',
+                domain: 'Not supplied / not checked', ip: 'Not available', pattern: 'Evidence-based verification pending',
+                advice: ['Do not forward as confirmed until checked against reliable sources.', 'Open the cited fact-check or official source and compare the exact claim and date.']
+            };
+        }
+
+        function renderAuditReport(data) {
+            document.getElementById('auditReportContainer').classList.remove('hidden');
+
+            document.getElementById('auditIdText').innerText = data.id;
+            document.getElementById('auditLatencyText').innerText = (data.latency_ms != null ? data.latency_ms + "ms" : "offline demo");
+            document.getElementById('analyzedHeadline').innerText = data.headline;
+            document.getElementById('metaChannel').innerText = data.channel;
+            document.getElementById('metaCategory').innerText = data.category;
+            document.getElementById('metaLanguage').innerText = data.language;
+            document.getElementById('metaVerification').innerText = data.verification;
+            document.getElementById('executiveSummaryText').innerText = data.summary;
+
+            document.getElementById('matrixClaimText').innerText = data.claim;
+            document.getElementById('matrixFactText').innerText = data.fact;
+
+            document.getElementById('provenanceSummaryText').innerText = data.provenance;
+            document.getElementById('techDomainText').innerText = data.domain;
+            document.getElementById('techIpText').innerText = data.ip;
+            document.getElementById('techPatternText').innerText = data.pattern;
+
+            const verdictCard = document.getElementById('verdictCard');
+            const verdictHeader = document.getElementById('verdictBannerHeader');
+            const badgeBox = document.getElementById('verdictBadgeBox');
+            const confGrade = document.getElementById('confidenceGradeText');
+
+            if(data.type === 'SCAM') {
+                verdictHeader.className = "px-6 py-3.5 text-sm font-bold tracking-wider uppercase flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b bg-rose-950/80 text-rose-300 border-rose-800";
+                badgeBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-lg"></i> <span>HIGH RISK DIGITAL SCAM & PHISHING DETECTED</span>`;
+                confGrade.innerText = "CREDIBILITY METRIC: MALICIOUS FRAUD (GRADE F)";
+            } else if(data.type === 'FAKE') {
+                verdictHeader.className = "px-6 py-3.5 text-sm font-bold tracking-wider uppercase flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b bg-amber-950/80 text-amber-300 border-amber-800";
+                badgeBox.innerHTML = `<i class="fa-solid fa-ban text-lg"></i> <span>FACT-CHECK REVIEW RATED FALSE / MISLEADING</span>`;
+                confGrade.innerText = "CREDIBILITY METRIC: UNVERIFIED HOAX (GRADE F)";
+            } else if(data.type === 'REAL') {
+                verdictHeader.className = "px-6 py-3.5 text-sm font-bold tracking-wider uppercase flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b bg-emerald-950/80 text-emerald-300 border-emerald-800";
+                badgeBox.innerHTML = `<i class="fa-solid fa-circle-check text-lg"></i> <span>VERIFIED — RELIABLE SOURCES CONFIRM THIS REPORT</span>`;
+                confGrade.innerText = "CREDIBILITY METRIC: SOURCE-MATCHED";
+            } else if(data.type === 'UNVERIFIED') {
+                verdictHeader.className = "px-6 py-3.5 text-sm font-bold tracking-wider uppercase flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b bg-amber-950/80 text-amber-300 border-amber-800";
+                badgeBox.innerHTML = `<i class="fa-solid fa-circle-question text-lg"></i> <span>UNVERIFIED — MORE EVIDENCE REQUIRED</span>`;
+                confGrade.innerText = "CREDIBILITY METRIC: INSUFFICIENT EVIDENCE";
+            }
+
+            // Render Sources
+            const srcList = document.getElementById('factSourcesList');
+            srcList.innerHTML = '';
+            data.sources.forEach(s => {
+                srcList.innerHTML += `
+                    <div class="flex items-start gap-2 text-xs text-zinc-300">
+                        <i class="fa-solid fa-shield-check text-cyan-400 mt-0.5"></i>
+                        <span>${esc(s)}</span>
+                    </div>
+                `;
+            });
+
+            // Render Red Flags
+            const flagsList = document.getElementById('linguisticFlagsList');
+            flagsList.innerHTML = '';
+            data.redFlags.forEach(f => {
+                flagsList.innerHTML += `
+                    <li class="flex items-start gap-2">
+                        <i class="fa-solid fa-bug text-amber-400 mt-0.5"></i>
+                        <span>${esc(f)}</span>
+                    </li>
+                `;
+            });
+
+            // Render Safety Guidance
+            const advBox = document.getElementById('safetyAdviceContainer');
+            advBox.innerHTML = '';
+            data.advice.forEach(a => {
+                advBox.innerHTML += `<p>${esc(a)}</p>`;
+            });
+
+            document.getElementById('auditReportContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyAuditSummary() {
+            const h = document.getElementById('analyzedHeadline').innerText;
+            const f = document.getElementById('matrixFactText').innerText;
+            const text = `VeriNews Fact Audit Dossier\nClaim: ${h}\nVerified Reality: ${f}\nGenerated by VeriNews AI v3.1 Intelligence Engine`;
+
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            alert("Audit Dossier Summary copied to clipboard for presentation!");
+        }
+
+        let chart1Instance = null;
+        let chart2Instance = null;
+
+        async function initBenchmarkCharts() {
+            if (chart1Instance) return;
+            let m;
+            try { const r = await fetch('/api/benchmarks'); if (!r.ok) throw 0; m = await r.json(); }
+            catch (e) { document.getElementById('benchNote').innerText = 'Backend offline — start it (python backend/app.py) to load measured metrics.'; return; }
+            const rows = m.models, names = rows.map(x => x.name.replace('TF-IDF + ', '')), d = m.dataset;
+            document.getElementById('benchNote').innerText = `Measured on ${d.samples} samples (${d.templates} templates; SCAM ${d.classes.SCAM} / HOAX ${d.classes.HOAX} / LEGIT ${d.classes.LEGIT}). ${d.evaluation}. ${d.note} Deployed: ${m.deployed}.`;
+            document.getElementById('metricsBody').innerHTML = rows.map(x => `<tr class="hover:bg-zinc-900/40"><td class="p-3 font-bold ${x.name === m.deployed ? 'text-emerald-400' : 'text-cyan-400'}">${esc(x.name)}${x.name === m.deployed ? ' (deployed)' : ''}</td><td class="p-3">${x.precision}%</td><td class="p-3">${x.recall}%</td><td class="p-3">${x.f1}%</td><td class="p-3">${x.accuracy}%</td><td class="p-3">${x.latency_ms} ms</td><td class="p-3">${x.parameters.toLocaleString()}</td></tr>`).join('');
+            const opt = (extra) => ({responsive: true, maintainAspectRatio: false, scales: {y: Object.assign({ticks: {color: '#a1a1aa'}, grid: {color: '#27272a'}}, extra), x: {ticks: {color: '#a1a1aa'}, grid: {color: '#27272a'}}}, plugins: {legend: {labels: {color: '#f4f4f5', font: {family: 'JetBrains Mono', size: 10}}}}});
+            chart1Instance = new Chart(document.getElementById('chartAccuracy').getContext('2d'), {type: 'bar', data: {labels: names, datasets: [
+                {label: 'Accuracy (%)', data: rows.map(x => x.accuracy), backgroundColor: 'rgba(6,182,212,0.7)'},
+                {label: 'F1-Score (%)', data: rows.map(x => x.f1), backgroundColor: 'rgba(168,85,247,0.7)'}]}, options: opt({min: 50, max: 100})});
+            chart2Instance = new Chart(document.getElementById('chartLatency').getContext('2d'), {type: 'bar', data: {labels: names, datasets: [
+                {label: 'Inference latency (ms, measured)', data: rows.map(x => x.latency_ms), backgroundColor: 'rgba(245,158,11,0.7)'}]}, options: opt({beginAtZero: true})});
+        }
+
+        function renderRadarCards(cat) {
+            const grid = document.getElementById('radarCardsGrid');
+            grid.innerHTML = '';
+
+            const items = cat === 'ALL' ? presetScenarios : presetScenarios.filter(i => i.type === cat);
+
+            items.forEach((item, idx) => {
+                let badgeStyle = "bg-amber-950/80 text-amber-300 border-amber-800";
+                let icon = "fa-triangle-exclamation";
+                if(item.type === 'SCAM') { badgeStyle = "bg-rose-950/80 text-rose-300 border-rose-800"; icon = "fa-shield-cat"; }
+                if(item.type === 'REAL') { badgeStyle = "bg-emerald-950/80 text-emerald-300 border-emerald-800"; icon = "fa-circle-check"; }
+                if(item.type === 'UNVERIFIED') { badgeStyle = "bg-amber-950/80 text-amber-300 border-amber-800"; icon = "fa-circle-question"; }
+
+                grid.innerHTML += `
+                    <div class="glass-panel glass-panel-hover rounded-xl p-5 flex flex-col justify-between transition-all duration-300">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${badgeStyle}">
+                                    <i class="fa-solid ${icon} mr-1"></i> ${item.type}
+                                </span>
+                                <span class="text-[10px] font-mono text-zinc-500">${item.id}</span>
+                            </div>
+                            <h3 class="text-sm font-bold text-white font-serif mb-2 line-clamp-2">${esc(item.headline)}</h3>
+                            <p class="text-xs text-zinc-400 line-clamp-3 mb-4 leading-relaxed">${esc(item.summary)}</p>
+                        </div>
+
+                        <button onclick="switchTab('analyzer'); loadPreset(${idx});" class="w-full py-2 bg-zinc-900 hover:bg-cyan-950/50 text-cyan-400 border border-zinc-800 rounded-lg text-xs font-mono transition-all flex items-center justify-center gap-2">
+                            <span>Open Detailed Audit</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function filterRadarCategory(c) {
+            renderRadarCards(c);
+        }
+
+        function filterRadar() {
+            const q = document.getElementById('radarSearch').value.toLowerCase();
+            const cards = document.querySelectorAll('#radarCardsGrid > div');
+            cards.forEach(c => {
+                const text = c.innerText.toLowerCase();
+                c.style.display = text.includes(q) ? 'flex' : 'none';
+            });
+        }
+
+        function openSubmitModal() {
+            document.getElementById('submitModal').classList.remove('hidden');
+        }
+
+        function closeSubmitModal() {
+            document.getElementById('submitModal').classList.add('hidden');
+        }
+
+        async function submitMessageToDataset() {
+            const txt = document.getElementById('modalText').value.trim();
+            if (!txt) { alert("Please paste the message text before submitting."); return; }
+            try {
+                const r = await fetch('/api/submit', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({platform: document.getElementById('modalPlatform').value, text: txt})});
+                const j = await r.json();
+                if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
+                closeSubmitModal(); document.getElementById('modalText').value = '';
+                alert('Thank you! Saved to the review queue (total submissions: ' + j.total + ').');
+            } catch (e) { alert('Could not submit: ' + e.message + ' (is the backend running?)'); }
+        }
+
+        // Initialize default loaded scenario on startup
+        window.onload = function() {
+            renderAuditReport(presetScenarios[0]);
+        };
+    </script>
+</body>
+</html>
